@@ -38,8 +38,9 @@ def process_line(line: str) -> Optional[LineResult]:
     if line.startswith('#') or line.startswith('-'):
         return None
 
-    if not '==' in line:
+    if not '==' in line or 'pp_up: pin' in line:
         # Only upgrade dependencies that are pinned
+        # And only upgrade dependencies that are not flagged as pin
         # Dependencies that are minimal don't need to be upgraded
         return None
 
