@@ -4,7 +4,7 @@ Main module to call `python -m pp_up` from command line
 import os
 import sys
 
-from .func import process_requirements, process_setup_py
+from .func import process_requirements, process_setup_py, process_pyproject_toml
 
 BACKUP_SUFFIX = '~'
 REQUIREMENTS_FILE_NAMES = ['requirements.txt', 'requirements-dev.txt']
@@ -21,6 +21,9 @@ def main() -> int:
 
     if os.path.isfile('setup.py'):
         process_setup_py('setup.py', BACKUP_SUFFIX)
+
+    if os.path.isfile('pyproject.toml'):
+        process_pyproject_toml('pyproject.toml', BACKUP_SUFFIX)
 
     return 0
 

@@ -1,0 +1,39 @@
+[project]
+name = "pp_up"
+version = "0.0.0rc2"
+description = "Update pypi dependencies"
+authors = [
+    {name = "Johan B.W. de Vries"},
+]
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "requests",
+    "toml",
+]
+
+[project.optional-dependencies]
+devel = [
+    "mypy==1.8.0",
+    "pylint==3.0.3",
+    "setuptools>=46.1.3",
+    "twine==5.0.0",
+    "types-toml",
+    "types-requests",
+]
+
+[project.urls]
+Homepage = "https://github.com/jbwdevries/pp-up"
+Repository = "https://github.com/jbwdevries/pp-up"
+
+[build-system]
+requires = ["setuptools>=46.1.3"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["pp_up"]

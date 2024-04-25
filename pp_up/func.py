@@ -5,8 +5,9 @@ from typing import Any, Iterable, List, Mapping, Optional, Tuple
 
 import functools
 import importlib
-import re
 import os
+import re
+import toml
 
 import requests
 import setuptools # type: ignore
@@ -141,3 +142,61 @@ def process_setup_py(filename: str, backup_suffix: str) -> None:
 
     finally:
         setuptools.setup = old_setup
+
+def process_pyproject_toml(filename: str, backup_suffix: str) -> None:
+    """
+    Processes a pyproject.toml file
+
+    The old file will be backupped, and the versions will be updated
+    """
+
+    os.rename(filename, filename + backup_suffix)
+
+    with open(filename + backup_suffix, 'rt') as in_file_obj, open(filename, 'wt') as out_file_obj:
+        config = toml.load(in_file_obj)
+
+        lineresult_list = []
+        traverse_dict(config, lineresult_list)
+
+        with open(filename + backup_suffix, 'rt') as in_file_obj:
+            text = in_file_obj.read()
+
+        for line_result in lineresult_list:
+            package, old_version, new_version = line_result
+            print('Upgrading {} from {} to {}'.format(package, old_version, new_version))
+            text = text.replace(
+                f'{package}=={old_version}',
+                f'{package}=={new_version}',
+            )
+
+        out_file_obj.write(text)
+
+def traverse_dict(config: dict, result: List[str]) -> List[LineResult]:
+    """
+    Traverses a dict and returns a list of strings
+    """
+    for key, item in config.items():
+        if isinstance(item, dict):
+            traverse_dict(item, result)
+        elif isinstance(item, list):
+            traverse_list(config, key, item, result)
+        elif isinstance(item, str):
+            if res := process_line(item):
+                result.append(res)
+
+    return result
+
+def traverse_list(config: dict, key: str, item: list, result: List[str]) -> List[LineResult]:
+    """
+    Traverses a list and returns a list of strings
+    """
+    for sub_item in item:
+        if isinstance(sub_item, dict):
+            traverse_dict(sub_item, result)
+        elif isinstance(sub_item, list):
+            traverse_list(config, key, sub_item, result)
+        elif isinstance(sub_item, str):
+            if res := process_line(sub_item):
+                result.append(res)
+
+    return result

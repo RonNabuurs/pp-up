@@ -11,7 +11,7 @@ build: venv/pip.done
 	venv/bin/python setup.py sdist bdist_wheel
 # Upload via venv/bin/python -m twine upload dist/pp_up-$VER*
 
-venv/pip.done: venv setup.py
+venv/pip.done: venv pyproject.toml
 	venv/bin/python -m pip install .[develop]
 	touch $@
 
